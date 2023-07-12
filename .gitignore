@@ -1,0 +1,6 @@
+
+/.idea/
+build/
+
+internal/gql/generated/generated.go
+internal/gql/model/models_gen.go
