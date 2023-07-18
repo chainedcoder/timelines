@@ -1,9 +1,57 @@
+#Scalars
 scalar Time
-# Types
+# Any maps to interface{}
+scalar Any
+
+# Enums
+enum LinkOperationType {
+  AND
+  OR
+}
+
+enum OperationType {
+  Equals
+  NotEquals
+  LessThan
+  LessThanEqual
+  GreaterThan
+  GreaterThanEqual
+  Is
+  IsNull
+  IsNotNull
+  In
+  NotIn
+  Like
+  ILike
+  NotLike
+  Between
+  Match
+}
+
+#Types
 type User {
   id: ID!
   email: String!
-  userId: String
+  avatarURL: String
+  name: String
+  firstName: String
+  lastName: String
+  nickName: String
+  description: String
+  location: String
+  APIkey: String
+  profiles(limit: Int = 10, offset: Int = 0): [UserProfile!]!
+  createdBy: User
+  updatedBy: User
+  createdAt: Time
+  updatedAt: Time
+}
+
+type UserProfile {
+  id: Int!
+  email: String!
+  externalUserId: String
+  avatarURL: String
   name: String
   firstName: String
   lastName: String
@@ -12,12 +60,198 @@ type User {
   location: String
   createdAt: Time!
   updatedAt: Time
+  createdBy: User
+  updatedBy: User
+}
+
+type Reformline {
+  id: ID!
+  title: String
+  type: String
+  date: String
+  name: String
+  headEvent: Event
+  createdAt: Time!
+  updatedAt: Time!
+}
+
+input ReformlineInput {
+  title: String
+  type: String
+  date: String
+  head: String
+  name: String
+  headEvent: EventInput
+}
+
+type Event {
+  id: ID!
+  title: String
+  description: String
+  date: String
+  literal_location: String
+  createdAt: Time!
+  updatedAt: Time!
+}
+
+input EventInput {
+  title: String
+  description: String
+  date: String
+  literal_location: String
+}
+
+type Methodology {
+  id: ID!
+  name: String
+  description: String
+  createdAt: Time!
+  updatedAt: Time!
+}
+
+input MethodologyInput {
+  id: ID!
+  name: String
+  description: String
+}
+
+type Breakdown {
+  id: ID!
+  Name: String!
+  Methodology: Methodology
+  ThreadGroup: ThreadGroup
+
+  CreatedAt: Time!
+  UpdatedAt: Time!
+}
+
+input BreakdownInput {
+  Name: String!
+  Methodology: MethodologyInput
+  ThreadGroup: ThreadGroupInput
+}
+
+type ApplicationEvent {
+  id: ID!
+  Name: String!
+  WaymarkEvent: WaymarkEvent
+  Symbol: Symbol
+  Breakdown: Breakdown
+  CreatedAt: Time!
+  UpdatedAt: Time!
+}
+
+input ApplicationEventInput {
+  Name: String!
+  WaymarkEvent: WaymarkEventInput
+  Symbol: SymbolInput
+  Breakdown: BreakdownInput
+}
+
+type ThreadGroup {
+  id: ID!
+  Name: String!
+  CreatedAt: Time!
+  UpdatedAt: Time!
+}
+
+input ThreadGroupInput {
+  Name: String!
+}
+
+type Tag {
+  id: ID!
+  Name: String!
+  CreatedAt: Time!
+  UpdatedAt: Time!
+}
+
+input TagInput {
+  Name: String!
+}
+
+type Waymark {
+  id: ID!
+  reformline: Reformline
+  name: String
+  next_waymark: Waymark
+  prev_waymark: Waymark
+  type: String
+  nickname: String
+  description: String
+  topic: String
+  createdAt: Time!
+  updatedAt: Time!
+}
+
+input WaymarkInput {
+  reformline: ReformlineInput
+  name: String
+  next_waymark: WaymarkInput
+  prev_waymark: WaymarkInput
+  type: String
+  nickname: String
+  description: String
+  topic: String
+}
+
+type WaymarkTag {
+  id: ID!
+  tag: Tag
+  waymark: Waymark
+}
+
+input WaymarkTagInput {
+  tag: TagInput
+  waymark: WaymarkInput
+}
+
+type WaymarkEvent {
+  id: ID!
+  title: String
+  name: String
+  event: Event
+  waymark: Waymark
+  description: String
+  createdAt: Time!
+  updatedAt: Time!
+}
+input WaymarkEventInput {
+  title: String
+  name: String
+  event: EventInput
+  waymark: WaymarkInput
+  description: String
+}
+type Symbol {
+  id: ID!
+  event: Event
+  name: String
+  type: String
+  description: String
+  createdAt: Time
+  updatedAt: Time
+}
+input SymbolInput {
+  event: EventInput
+  name: String
+  type: String
+  description: String
 }
 
 # Input Types
+input QueryFilter {
+  field: String!
+  linkOperation: LinkOperationType = AND
+  op: OperationType!
+  value: Any
+  values: [Any!]
+}
+
 input UserInput {
   email: String
-  userId: String
+  password: String
+  avatarURL: String
   displayName: String
   name: String
   firstName: String
@@ -25,12 +259,62 @@ input UserInput {
   nickName: String
   description: String
   location: String
+  addRoles: [ID]
+  remRoles: [ID]
+  addPermissions: [ID]
+  remPermissions: [ID]
 }
 
 # List Types
 type Users {
-  count: Int # You want to return count for a grid for example
-  list: [User!]! # that is why we need to specify the users object this way
+  count: Int
+  list: [User!]!
+}
+
+type Reformlines {
+  count: Int
+  list: [Reformline!]!
+}
+
+type Events {
+  count: Int
+  list: [Event!]!
+}
+type Methodologies {
+  count: Int
+  list: [Methodology!]!
+}
+type Breakdowns {
+  count: Int
+  list: [Breakdown!]!
+}
+type ApplicationEvents {
+  count: Int
+  list: [ApplicationEvent!]!
+}
+type ThreadGroups {
+  count: Int
+  list: [ThreadGroup!]!
+}
+type Tags {
+  count: Int
+  list: [Tag!]!
+}
+type Waymarks {
+  count: Int
+  list: [Waymark!]!
+}
+type WaymarkTags {
+  count: Int
+  list: [WaymarkTag!]!
+}
+type WaymarkEvents {
+  count: Int
+  list: [WaymarkEvent!]!
+}
+type Symbols {
+  count: Int
+  list: [Symbol!]!
 }
 
 # Define mutations here
@@ -38,9 +322,162 @@ type Mutation {
   createUser(input: UserInput!): User!
   updateUser(id: ID!, input: UserInput!): User!
   deleteUser(id: ID!): Boolean!
+
+  createReformline(input: ReformlineInput!): Reformline!
+  updateReformline(id: ID!, input: ReformlineInput!): Reformline!
+  deleteReformline(id: ID!): Boolean!
+
+  createEvent(input: EventInput!): Event!
+  updateEvent(id: ID!, input: EventInput!): Event!
+  deleteEvent(id: ID!): Boolean!
+
+  createMethodology(input: MethodologyInput!): Methodology!
+  updateMethodology(id: ID!, input: MethodologyInput!): Methodology!
+  deleteMethodology(id: ID!): Boolean!
+
+  createBreakdown(input: BreakdownInput!): Breakdown!
+  updateBreakdown(id: ID!, input: BreakdownInput!): Breakdown!
+  deleteBreakdown(id: ID!): Boolean!
+
+  createApplicationEvent(input: ApplicationEventInput!): ApplicationEvent!
+  updateApplicationEvent(
+    id: ID!
+    input: ApplicationEventInput!
+  ): ApplicationEvent!
+  deleteApplicationEvent(id: ID!): Boolean!
+
+  createThreadGroup(input: ThreadGroupInput!): ThreadGroup!
+  updateThreadGroup(id: ID!, input: ThreadGroupInput!): ThreadGroup!
+  deleteThreadGroup(id: ID!): Boolean!
+
+  createTag(input: TagInput!): Tag!
+  updateTag(id: ID!, input: TagInput!): Tag!
+  deleteTag(id: ID!): Boolean!
+
+  createWaymark(input: WaymarkInput!): Waymark!
+  updateWaymark(id: ID!, input: WaymarkInput!): Waymark!
+  deleteWaymark(id: ID!): Boolean!
+
+  createWaymarkTag(input: WaymarkTagInput!): WaymarkTag!
+  updateWaymarkTag(id: ID!, input: WaymarkTagInput!): WaymarkTag!
+  deleteWaymarkTag(id: ID!): Boolean!
+
+  createWaymarkEvent(input: WaymarkEventInput!): WaymarkEvent!
+  updateWaymarkEvent(id: ID!, input: WaymarkEventInput!): WaymarkEvent!
+  deleteWaymarkEvent(id: ID!): Boolean!
+
+  createSymbol(input: SymbolInput!): Symbol!
+  updateSymbol(id: ID!, input: SymbolInput!): Symbol!
+  deleteSymbol(id: ID!): Boolean!
 }
 
 # Define queries here
 type Query {
-  users(id: ID): Users!
+  users(
+    id: ID
+    filters: [QueryFilter]
+    limit: Int = 50
+    offset: Int = 0
+    orderBy: String = "id"
+    sortDirection: String = "ASC"
+  ): Users!
+
+  reformlines(
+    id: ID
+    filters: [QueryFilter]
+    limit: Int = 50
+    offset: Int = 0
+    orderBy: String = "createdAt"
+    sortDirection: String = "ASC"
+  ): Reformlines!
+
+  events(
+    id: ID
+    filters: [QueryFilter]
+    limit: Int = 50
+    offset: Int = 0
+    orderBy: String = "createdAt"
+    sortDirection: String = "ASC"
+  ): Events!
+
+  methodologies(
+    id: ID
+    filters: [QueryFilter]
+    limit: Int = 50
+    offset: Int = 0
+    orderBy: String = "id"
+    sortDirection: String = "ASC"
+  ): Methodologies!
+
+  breakdowns(
+    id: ID
+    filters: [QueryFilter]
+    limit: Int = 50
+    offset: Int = 0
+    orderBy: String = "createdAt"
+    sortDirection: String = "ASC"
+  ): Breakdowns!
+
+  applicationEvents(
+    id: ID
+    filters: [QueryFilter]
+    limit: Int = 50
+    offset: Int = 0
+    orderBy: String = "createdAt"
+    sortDirection: String = "ASC"
+  ): ApplicationEvents!
+
+  threadGroups(
+    id: ID
+    filters: [QueryFilter]
+    limit: Int = 50
+    offset: Int = 0
+    orderBy: String = "createdAt"
+    sortDirection: String = "ASC"
+  ): ThreadGroups!
+
+  tags(
+    id: ID
+    filters: [QueryFilter]
+    limit: Int = 50
+    offset: Int = 0
+    orderBy: String = "createdAt"
+    sortDirection: String = "ASC"
+  ): Tags!
+
+  waymarks(
+    id: ID
+    filters: [QueryFilter]
+    limit: Int = 50
+    offset: Int = 0
+    orderBy: String = "createdAt"
+    sortDirection: String = "ASC"
+  ): Waymarks!
+
+  waymarkTags(
+    id: ID
+    filters: [QueryFilter]
+    limit: Int = 50
+    offset: Int = 0
+    orderBy: String = "createdAt"
+    sortDirection: String = "ASC"
+  ): WaymarkTags!
+
+  waymarkEvents(
+    id: ID
+    filters: [QueryFilter]
+    limit: Int = 50
+    offset: Int = 0
+    orderBy: String = "createdAt"
+    sortDirection: String = "ASC"
+  ): WaymarkEvents!
+
+  symbols(
+    id: ID
+    filters: [QueryFilter]
+    limit: Int = 50
+    offset: Int = 0
+    orderBy: String = "createdAt"
+    sortDirection: String = "ASC"
+  ): Symbols!
 }

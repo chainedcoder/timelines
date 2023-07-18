@@ -1,4 +1,6 @@
 #!/bin/bash
+printf "\Fetching latest 99designs/gqlgen: $app\n"
+go get github.com/99designs/gqlgen
 printf "\nRegenerating gqlgen files\n"
 # Optional, delete the resolver to regenerate, only if there are new queries
 # or mutations, if you are just changing the input or type definition and
